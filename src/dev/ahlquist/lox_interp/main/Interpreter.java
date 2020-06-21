@@ -1,16 +1,21 @@
 package dev.ahlquist.lox_interp.main;
 
-public class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
 
-    String interpret(Expr expression) {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+
+    void interpret(List<Stmt> statements) {
         try {
-            Object value = evaluate(expression);
-            return stringify(value);
-//            System.out.println(stringify(value));
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
-            return "";
         }
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
     }
 
     /* Implement Expr.Visitor<Object> */
@@ -81,8 +86,21 @@ public class Interpreter implements Expr.Visitor<Object> {
         }
     }
 
-    /* Private Methods */
+    /* Implement Stmt.Visitor<Void> */
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
 
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object result = evaluate(stmt.expression);
+        System.out.println(stringify(result));
+        return null;
+    }
+
+    /* Private Methods */
     private void checkNumberOperand(Token operator, Object operand) {
         if (operand instanceof Double) return;
         throw new RuntimeError(operator, "Operand must be a number.");
