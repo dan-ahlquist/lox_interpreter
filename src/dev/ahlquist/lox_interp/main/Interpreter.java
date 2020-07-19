@@ -148,6 +148,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return function.call(this, args);
     }
 
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        Object value = null;
+        if(stmt.value != null)
+            value = evaluate(stmt.value);
+
+        throw new Return(value);
+    }
+
     /* Implement Stmt.Visitor<Void> */
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
