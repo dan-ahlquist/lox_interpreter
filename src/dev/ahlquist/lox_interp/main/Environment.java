@@ -31,6 +31,18 @@ class Environment {
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
 
+    Object getAt(Token name, int depth) {
+        return ancestor(depth).get(name);
+    }
+
+    private Environment ancestor(int depth) {
+        Environment environment = this;
+        for (int i = 0; i < depth; i++) {
+            environment = environment.parent;
+        }
+        return environment;
+    }
+
     void assign(Token name, Object value) {
         if (values.containsKey(name.lexeme)) {
             values.put(name.lexeme, value);
@@ -43,5 +55,9 @@ class Environment {
         }
 
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+    }
+
+    void assignAt(Token name, Object value, int depth) {
+        ancestor(depth).values.put(name.lexeme, value);
     }
 }
