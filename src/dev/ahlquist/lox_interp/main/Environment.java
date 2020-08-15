@@ -31,8 +31,8 @@ class Environment {
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
 
-    Object getAt(Token name, int depth) {
-        return ancestor(depth).get(name);
+    Object getAt(String name, int depth) {
+        return ancestor(depth).values.get(name);
     }
 
     private Environment ancestor(int depth) {
